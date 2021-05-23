@@ -31,7 +31,7 @@ def addToTagAdd(s):
     # s is in hex
     block_offset = int(s,16)%cache_block_size
     tag = int(s,16) - block_offset
-    index = (tag)%n_asso
+    index = (tag//cache_block_size)%num_sets
     tagAdd = '0b'+bin(tag)[2:]+'0'*(num_index_bits-len(bin(index))+2)+bin(index)[2:]+'0'*(num_block_offset_bits-len(bin(block_offset))+2)+bin(block_offset)[2:]
     return tagAdd
 
@@ -113,13 +113,13 @@ def dataWriteCache(s,data,h):
             value += data[2:]
             value += data_cache[data_index][i][1][data_offset*2+4:]
             data_cache[data_index][i][1] = value
-            lru_data[i[0]] = n_asso-1
+            lru_data[data_cache[data_index][i][0]] = n_asso-1
             h.pop()
             h.append([data_tag,1])
             
         else:
-            if i[0] in lru_data:
-                lru_data[i[0]] = max(0,lru_data[i[0]]-1)
+            if data_cache[data_index][i][0] in lru_data:
+                lru_data[data_cache[data_index][i][0]] = max(0,lru_data[data_cache[data_index][i][0]]-1)
     
 
 def init_registers():
@@ -1781,7 +1781,8 @@ class Ui_mainWindow(object):
 
     def assemblechange(self,mainWindow):
         
-        temp=self.parallel.currentTextChanged.connect(self.assemblechange)
+        self.parallel.currentTextChanged.connect(self.assemblechange)
+        temp=self.parallel.currentText()
         flag=-1
         if(temp=="Pipeline - Stalling"):
             flag=0
