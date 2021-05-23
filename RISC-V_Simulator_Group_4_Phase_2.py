@@ -1577,7 +1577,8 @@ class Ui_mainWindow(object):
 
 
     def assemblechange(self,mainWindow):
-        temp=self.parallel.currentTextChanged.connect(self.assemblechange)
+        self.parallel.currentTextChanged.connect(self.assemblechange)
+        temp=self.parallel.currentText()
         flag=-1
         if(temp=="Pipeline - Stalling"):
             flag=0
